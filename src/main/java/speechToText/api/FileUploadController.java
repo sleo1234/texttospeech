@@ -26,7 +26,7 @@ public class FileUploadController {
 	public ResponseEntity<FileUploadResponse> uploadFile (@RequestParam ("file") MultipartFile multipartFile, HttpServletRequest request) throws IOException {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		long size = multipartFile.getSize();
-		FileUploadUtil.saveFile(fileName, multipartFile);
+		FileUploadUtil.saveFile(fileName+LocalDateTime.now(), multipartFile);
 		FileUploadResponse response = new FileUploadResponse();
 		
 		
@@ -37,7 +37,7 @@ public class FileUploadController {
 		
 		
 		TextToSpeech txt2sp = new TextToSpeech();
-		txt2sp.speak(file, "audio_file",path);
+		txt2sp.speak(file, "audio_file"+LocalDateTime.now(),path);
 		response.setFileName("audio" + LocalDateTime.now()); 
 		response.setSize(size);
 		return new ResponseEntity<FileUploadResponse>(response, HttpStatus.CREATED);
@@ -50,9 +50,11 @@ public class FileUploadController {
 		FileUploadResponse response = new FileUploadResponse();
 		TextToSpeech txt2sp = new TextToSpeech();
 		String path = "C:\\Users\\Leo\\eclipse-workspace\\speech\\text-files\\";
-		txt2sp.speak(text.getText().toString(), "audio_file",path);
+		
+		txt2sp.speak(text.getText(), "audio_file",path);
+		
 		System.out.println("======================" +text.toString());
-		response.setFileName("audio" + LocalDateTime.now()); 
+		response.setFileName("audio" ); 
 		
 		
 		return new ResponseEntity<FileUploadResponse>(response, HttpStatus.CREATED);
