@@ -35,7 +35,7 @@ public class ApplicationSecurity {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
          
         http.authorizeRequests()
-                .antMatchers("/auth/login").permitAll()
+                .antMatchers("/auth/login", "/auth/create_account").permitAll()
                 .anyRequest().authenticated();
          
             http.exceptionHandling()
