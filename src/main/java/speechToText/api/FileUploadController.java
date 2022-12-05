@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileWriter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,10 +34,11 @@ public class FileUploadController {
 	
 	@PostMapping("/auth/api/")
 	
-	public ResponseEntity<FileUploadResponse> uploadFile (@RequestParam ("file") MultipartFile multipartFile, HttpServletRequest request) throws IOException {
+	public ResponseEntity<FileUploadResponse> uploadFile (@RequestParam ("file") MultipartFile multipartFile) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		long size = multipartFile.getSize();
-		FileUploadUtil.saveFile(fileName+LocalDateTime.now(), multipartFile);
+		System.out.println("]]]]]]]]]]" + size);
+		FileUploadUtil.saveFile(fileName, multipartFile);
 		FileUploadResponse response = new FileUploadResponse();
 		
 		
@@ -45,22 +49,24 @@ public class FileUploadController {
 		
 		
 		TextToSpeech txt2sp = new TextToSpeech();
-		txt2sp.speak(file, "audio_file"+LocalDateTime.now(),path);
-		response.setFileName("audio" + LocalDateTime.now()); 
+		txt2sp.speak(file, "audio_file",path);
+		response.setFileName("audio" + LocalDateTime.now());
+		txt2sp.getAudioPlay(path, "audio_file.wav");
+		
 		response.setSize(size);
 		return new ResponseEntity<FileUploadResponse>(response, HttpStatus.CREATED);
 		
 	}
 	
 	@PostMapping("auth/api_text")
-	public ResponseEntity<FileUploadResponse> sendText(@RequestBody BodyText text){
+	public ResponseEntity<FileUploadResponse> sendText(@RequestBody BodyText text) throws UnsupportedAudioFileException, IOException, LineUnavailableException{
 		
 		FileUploadResponse response = new FileUploadResponse();
 		TextToSpeech txt2sp = new TextToSpeech();
 		String path = "C:\\Users\\Leo\\eclipse-workspace\\speech\\text-files\\";
 		
 		txt2sp.speak(text.getText(), "audio_file",path);
-		
+		txt2sp.getAudioPlay(path, "audio_file.wav");
 		System.out.println("======================" +text.toString());
 		response.setFileName("audio" ); 
 		
